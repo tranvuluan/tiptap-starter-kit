@@ -46,6 +46,7 @@ export * from "./nodes/math-inline";
 export * from "./extensions/starter-kit";
 export * from "./extensions/uploader";
 export * from "./extensions/markdown";
+export * from "./extensions/color";
 export * from "./extensions/clipboard";
 export * from "./extensions/block-menu/menu";
 export * from "./extensions/float-menu/menu";

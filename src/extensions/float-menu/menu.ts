@@ -30,6 +30,7 @@ export const FloatMenu = Extension.create<FloatMenuOptions>({
   addOptions() {
     return {
       items: [
+        "color",
         "bold",
         "italic",
         "strike",

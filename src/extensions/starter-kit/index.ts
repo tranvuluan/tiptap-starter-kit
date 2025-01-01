@@ -2,9 +2,11 @@ import { AnyExtension, Extension } from "@tiptap/core";
 import { Gapcursor } from "@tiptap/extension-gapcursor";
 import { History, HistoryOptions } from "@tiptap/extension-history";
 import { Dropcursor, DropcursorOptions } from "@tiptap/extension-dropcursor";
+import TextStyle, { TextStyleOptions } from '@tiptap/extension-text-style'
 import { Text } from "../../nodes/text";
 import { Document } from "../../nodes/document";
 import { Bold, BoldOptions } from "../../marks/bold";
+import { Color, ColorOptions } from "../../marks/color";
 import { Code, CodeOptions } from "../../marks/code";
 import { Link, LinkOptions } from "../../marks/link";
 import { Audio, AudioOptions } from "../../nodes/audio";
@@ -35,7 +37,7 @@ import { Paragraph, ParagraphOptions } from "../../nodes/paragraph";
 import { TableCell, TableCellOptions } from "../../nodes/table-cell";
 import { BlockMenu, BlockMenuOptions } from "../block-menu/menu";
 import { ClickMenu, ClickMenuOptions } from "../click-menu/menu";
-import { FloatMenu, FloatMenuOptions } from "../float-menu/menu";
+// import { FloatMenu, FloatMenuOptions } from "../float-menu/menu";
 import { Clipboard, ClipboardOptions } from "../clipboard";
 import { Blockquote, BlockquoteOptions } from "../../nodes/blockquote";
 import { BulletList, BulletListOptions } from "../../nodes/bullet-list";
@@ -94,8 +96,10 @@ export interface StarterKitOptions {
   markdown?: Partial<MarkdownOptions> | boolean;
   clipboard?: Partial<ClipboardOptions> | boolean;
   blockMenu?: Partial<BlockMenuOptions> | boolean;
-  floatMenu?: Partial<FloatMenuOptions> | boolean;
+  color?: Partial<ColorOptions> | boolean;
+  // floatMenu?: Partial<FloatMenuOptions> | boolean;
   clickMenu?: Partial<ClickMenuOptions> | boolean;
+  textStyle: Partial<TextStyleOptions> | boolean;
   // tiptap
   history?: Partial<HistoryOptions> | boolean;
   gapCursor?: Partial<any> | boolean;
@@ -151,9 +155,11 @@ export const StarterKit = Extension.create<StarterKitOptions>({
     configure(extensions, Uploader, this.options.uploader);
     configure(extensions, Markdown, this.options.markdown);
     configure(extensions, Clipboard, this.options.clipboard);
+    configure(extensions, (Color as any), this.options.color);
     configure(extensions, BlockMenu, this.options.blockMenu);
-    configure(extensions, FloatMenu, this.options.floatMenu);
+    // configure(extensions, FloatMenu, this.options.floatMenu);
     configure(extensions, ClickMenu, this.options.clickMenu);
+    configure(extensions, (TextStyle as any), this.options.textStyle);
     // tiptap
     configure(extensions, History, this.options.history);
     configure(extensions, Gapcursor, this.options.gapCursor);

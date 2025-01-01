@@ -42,11 +42,13 @@ export const BlockMenu = Extension.create<BlockMenuOptions>({
         "bulletList",
         "taskList",
         "|",
-        "image",
-        "audio",
+        // "image", // custom
+        // "audio", // custom
         "video",
         "|",
         "blockquote",
+        "blockbox", // custom
+        "blockcard", // custom
         "codeBlock",
         "mathBlock",
         "mermaid",
