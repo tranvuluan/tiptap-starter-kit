@@ -1,4 +1,7 @@
-import { Table as TTable, TableOptions as TTableOptions } from "@tiptap/extension-table";
+import {
+  Table as TTable,
+  TableOptions as TTableOptions,
+} from "@tiptap/extension-table";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { posToDOMRect } from "@tiptap/core";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
@@ -19,16 +22,19 @@ export interface TableOptions extends TTableOptions {
     toggleHeaderCol: string;
     deleteTable: string;
   };
+  /**
+   * If true, the rendered table will not have a border.
+   */
+  disableBorder?: boolean;
 }
 
-// TODO: drag row or column
-// TODO: serialize custom properties to markdown
 export const Table = TTable.extend<TableOptions>({
   name: "table",
   addOptions() {
     return {
       ...this.parent?.(),
       resizable: true,
+      disableBorder: false, // New option to disable border
       dictionary: {
         name: "Table",
         alignLeft: "Left alignment",
@@ -40,29 +46,44 @@ export const Table = TTable.extend<TableOptions>({
       },
     };
   },
+  // Override renderHTML to conditionally disable the border.
+  renderHTML({ HTMLAttributes }) {
+    const borderStyle = this.options.disableBorder ? "border: none;" : "";
+    const modifiedHTMLAttributes = {
+      ...HTMLAttributes,
+      style: `${HTMLAttributes.style || ""} ${borderStyle}`.trim(),
+    };
+    return ["table", modifiedHTMLAttributes, 0];
+  },
   addStorage() {
     return {
       ...this.parent?.(),
       markdown: {
         parser: {
-          match: node => node.type === "table",
+          match: (node) => node.type === "table",
           apply: (state, node, type) => {
             state.openNode(type);
             if (node.children) {
-              state.next(node.children.map((a, i) => ({ ...a, align: node.align[i], isHeader: i === 0 })));
+              state.next(
+                node.children.map((a, i) => ({
+                  ...a,
+                  align: node.align[i],
+                  isHeader: i === 0,
+                }))
+              );
             }
             state.closeNode();
           },
         },
         serializer: {
-          match: node => node.type.name === this.name,
+          match: (node) => node.type.name === this.name,
           apply: (state, node) => {
             const firstLine = node.content.firstChild?.content;
             if (!firstLine) {
               return;
             }
             const align: (string | null)[] = [];
-            firstLine.forEach(cell => align.push(cell.attrs.alignment));
+            firstLine.forEach((cell) => align.push(cell.attrs.alignment));
             state.openNode({ type: "table", align });
             state.next(node.content);
             state.closeNode();
@@ -79,15 +100,18 @@ export const Table = TTable.extend<TableOptions>({
             name: this.options.dictionary.name,
             icon: icon("table"),
             keywords: "table,bg",
-            action: editor => editor.chain().insertTable({ rows: 3, cols: 3 }).focus().run(),
+            action: (editor) =>
+              editor.chain().insertTable({ rows: 3, cols: 3 }).focus().run(),
           },
         ],
       },
-    } satisfies NodeMarkdownStorage & FloatMenuItemStorage & BlockMenuItemStorage;
+    } satisfies NodeMarkdownStorage &
+      FloatMenuItemStorage &
+      BlockMenuItemStorage;
   },
   addProseMirrorPlugins() {
     return [
-      ...TTable.config.addProseMirrorPlugins?.apply(this) ?? [],
+      ...(TTable.config.addProseMirrorPlugins?.apply(this) ?? []),
       new Plugin({
         key: new PluginKey(`${this.name}-float-menu`),
         view: FloatMenuView.create({
@@ -114,17 +138,20 @@ export const Table = TTable.extend<TableOptions>({
             const alignLeft = view.createButton({
               name: this.options.dictionary.alignLeft,
               view: icon("align-left"),
-              onClick: () => editor.chain().setCellAttribute("align", "left").run(),
+              onClick: () =>
+                editor.chain().setCellAttribute("align", "left").run(),
             });
             const alignCenter = view.createButton({
               name: this.options.dictionary.alignCenter,
               view: icon("align-center"),
-              onClick: () => editor.chain().setCellAttribute("align", "center").run(),
+              onClick: () =>
+                editor.chain().setCellAttribute("align", "center").run(),
             });
             const alignRight = view.createButton({
               name: this.options.dictionary.alignRight,
               view: icon("align-right"),
-              onClick: () => editor.chain().setCellAttribute("align", "right").run(),
+              onClick: () =>
+                editor.chain().setCellAttribute("align", "right").run(),
             });
             const toggleHeaderRow = view.createButton({
               name: this.options.dictionary.toggleHeaderRow,
@@ -162,7 +189,7 @@ export const Table = TTable.extend<TableOptions>({
                     const grip = document.createElement("div");
                     grip.classList.add("ProseMirror-table-grip-table");
                     return grip;
-                  }),
+                  })
                 );
               }
             }

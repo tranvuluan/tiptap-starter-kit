@@ -2641,14 +2641,13 @@ const DetailsSummary = core.Node.create({
     }
 });
 
-// TODO: drag row or column
-// TODO: serialize custom properties to markdown
 const Table = extensionTable.Table.extend({
     name: "table",
     addOptions () {
         return {
             ...this.parent?.(),
             resizable: true,
+            disableBorder: false,
             dictionary: {
                 name: "Table",
                 alignLeft: "Left alignment",
@@ -2659,6 +2658,19 @@ const Table = extensionTable.Table.extend({
                 deleteTable: "Delete table"
             }
         };
+    },
+    // Override renderHTML to conditionally disable the border.
+    renderHTML ({ HTMLAttributes }) {
+        const borderStyle = this.options.disableBorder ? "border: none;" : "";
+        const modifiedHTMLAttributes = {
+            ...HTMLAttributes,
+            style: `${HTMLAttributes.style || ""} ${borderStyle}`.trim()
+        };
+        return [
+            "table",
+            modifiedHTMLAttributes,
+            0
+        ];
     },
     addStorage () {
         return {

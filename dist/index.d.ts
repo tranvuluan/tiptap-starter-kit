@@ -218,6 +218,10 @@ interface TableOptions extends TableOptions$1 {
         toggleHeaderCol: string;
         deleteTable: string;
     };
+    /**
+     * If true, the rendered table will not have a border.
+     */
+    disableBorder?: boolean;
 }
 declare const Table: _tiptap_core.Node<TableOptions, any>;
 
